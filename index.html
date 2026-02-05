@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jiahao "Kasper" Xu - Portfolio</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        @font-face {
+            font-family: 'EarlyGameBoy';
+            src: url('./assets/fonts/Early-GameBoy.woff2') format('woff2'),
+                 url('./assets/fonts/Early-GameBoy.woff') format('woff');
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gray-100: #f5f5f5;
+            --gray-200: #e8e8e8;
+            --gray-300: #d0d0d0;
+            --gray-400: #b0b0b0;
+            --gray-500: #909090;
+            --gray-600: #707070;
+            --gray-700: #505050;
+            --gray-800: #353535;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+            font-size: 14px;
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        body.lang-zh { font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; }
+
+        #desktop { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+        
+        #pixel-background { 
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            z-index: 0; 
+            opacity: 0;
+            transform: translateY(-30px);
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+        }
+        #pixel-background.visible { opacity: 1; transform: translateY(0); }
+
+        #header-text { 
+            position: absolute; top: 35px; left: 50%; 
+            transform: translateX(-50%); 
+            text-align: center; z-index: 100; 
+            opacity: 0;
+            transition: opacity 0.8s ease-out 0.4s;
+        }
+        #header-text.visible { opacity: 1; }
+        #header-text h1 { font-family: 'EarlyGameBoy', monospace; font-size: 2.8em; margin-bottom: 12px; letter-spacing: 3px; color: var(--gray-600); }
+        #header-text h2 { font-family: 'EarlyGameBoy', monospace; font-size: 1.1em; font-weight: normal; letter-spacing: 2px; color: var(--gray-600); }
+
+        #footer-text { 
+            position: absolute; bottom: 25px; left: 50%; 
+            transform: translateX(-50%); 
+            text-align: center; z-index: 100; 
+            opacity: 0;
+            transition: opacity 0.8s ease-out 0.6s;
+        }
+        #footer-text.visible { opacity: 1; }
+        #footer-text p { font-family: 'EarlyGameBoy', monospace; font-size: 1em; color: var(--gray-600); }
+
+        #language-switcher { 
+            position: absolute; right: 30px; top: 30px; 
+            z-index: 200; display: flex; gap: 6px; 
+            opacity: 0;
+            transition: opacity 0.8s ease-out 0.5s;
+        }
+        #language-switcher.visible { opacity: 1; }
+        .lang-btn { padding: 8px 16px; font-size: 11px; background: var(--gray-200); border: 3px solid; border-color: var(--gray-100) var(--gray-500) var(--gray-500) var(--gray-100); cursor: pointer; font-family: 'EarlyGameBoy', monospace; color: var(--gray-700); }
+        .lang-btn:hover { background: var(--gray-300); }
+        .lang-btn.active { border-color: var(--gray-500) var(--gray-100) var(--gray-100) var(--gray-500); background: var(--gray-300); }
+
+        #sidebar { 
+            position: fixed; width: 180px; left: 25px; top: 50%; 
+            transform: translateY(-50%); z-index: 500; 
+            background: var(--gray-300); 
+            border: 3px solid; border-color: var(--gray-100) var(--gray-600) var(--gray-600) var(--gray-100); 
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.2); 
+            opacity: 0;
+            transition: opacity 0.8s ease-out 0.3s;
+        }
+        #sidebar.visible { opacity: 1; }
+        .sidebar-handle { background: var(--gray-500); color: var(--gray-100); padding: 10px; font-size: 12px; text-align: center; font-family: 'EarlyGameBoy', monospace; }
+        .sidebar-content { padding: 8px; background: var(--gray-200); }
+        .sidebar-item { display: block; width: 100%; padding: 12px 10px; margin-bottom: 4px; background: var(--gray-200); border: 2px solid; border-color: var(--gray-100) var(--gray-500) var(--gray-500) var(--gray-100); font-size: 11px; text-align: left; cursor: pointer; font-family: 'EarlyGameBoy', monospace; color: var(--gray-700); }
+        .sidebar-item:last-child { margin-bottom: 0; }
+        .sidebar-item:hover { background: var(--gray-400); }
+        .sidebar-item.active { border-color: var(--gray-500) var(--gray-100) var(--gray-100) var(--gray-500); background: var(--gray-400); }
+
+        .project-tab-window { 
+            position: absolute; width: 190px;
+            background: var(--gray-300); 
+            border: 3px solid; border-color: var(--gray-100) var(--gray-600) var(--gray-600) var(--gray-100); 
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.2); 
+            z-index: 50; display: none;
+            opacity: 0; transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .project-tab-window.visible { opacity: 1; transform: translateY(0); }
+        .project-tab-window .window-header { background: var(--gray-500); color: var(--gray-100); padding: 8px 12px; font-size: 10px; font-family: 'EarlyGameBoy', monospace; cursor: move; }
+        .project-tab-window .window-subtitle { 
+            background: var(--gray-400); padding: 6px 10px; 
+            font-size: 8px; font-family: 'EarlyGameBoy', monospace; 
+            color: var(--gray-700); border-bottom: 1px solid var(--gray-500);
+        }
+        .project-tab-window .project-tag {
+            display: inline-block; background: var(--gray-600); color: var(--gray-100);
+            padding: 2px 6px; font-size: 7px; margin-right: 4px; margin-top: 4px;
+        }
+        .project-tab-window .window-body { padding: 10px; background: var(--gray-100); margin: 6px; border: 2px solid var(--gray-400); cursor: pointer; }
+        .project-tab-window .window-body:hover { background: #fffde7; }
+        .project-tab-window .project-cover { 
+            width: 100%; height: 210px;
+            background: white; border: 2px solid var(--gray-400); 
+            margin-bottom: 8px; overflow: hidden;
+        }
+        .project-tab-window .project-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .project-tab-window .project-hint { text-align: center; font-size: 9px; color: var(--gray-500); font-family: 'EarlyGameBoy', monospace; }
+
+        #modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); z-index: 900; display: none; 
+            backdrop-filter: blur(2px);
+        }
+        #modal-overlay.active { display: block; }
+
+        .modal-window { 
+            position: fixed; background: var(--gray-300); 
+            border: 3px solid; border-color: var(--gray-100) var(--gray-600) var(--gray-600) var(--gray-100); 
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.3); display: none; z-index: 1000; 
+        }
+        .modal-window .window-header { background: var(--gray-500); color: var(--gray-100); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: move; }
+        .modal-window .window-title { font-size: 14px; font-family: 'EarlyGameBoy', monospace; }
+        .window-controls { display: flex; gap: 4px; }
+        .window-controls button { width: 24px; height: 24px; background: var(--gray-300); border: 2px solid; border-color: var(--gray-100) var(--gray-500) var(--gray-500) var(--gray-100); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--gray-700); }
+        .window-controls button:hover { background: var(--gray-400); }
+
+        #about-me-window { width: 1020px; height: 744px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        #about-me-window .window-content { height: calc(100% - 48px); display: flex; flex-direction: column; background: var(--gray-200); }
+        .tabs-container { background: var(--gray-300); padding: 10px 10px 0; display: flex; gap: 2px; border-bottom: 2px solid var(--gray-500); }
+        .tab-btn { padding: 12px 22px; background: var(--gray-400); border: 2px solid; border-color: var(--gray-200) var(--gray-600) var(--gray-600) var(--gray-200); border-bottom: none; font-size: 13px; cursor: pointer; font-family: 'EarlyGameBoy', monospace; position: relative; top: 2px; color: var(--gray-700); }
+        .tab-btn:hover:not(.active) { background: var(--gray-300); }
+        .tab-btn.active { background: var(--gray-100); border-bottom: 2px solid var(--gray-100); }
+        .tab-content { flex: 1; background: var(--gray-100); border: 2px solid var(--gray-400); margin: 10px; overflow-y: auto; display: none; }
+        .tab-content.active { display: block; }
+        .tab-inner { padding: 30px; }
+
+        .profile-row { display: flex; gap: 30px; margin-bottom: 24px; }
+        .profile-photo { width: 156px; height: 156px; border: 3px solid var(--gray-400); background: var(--gray-200); flex-shrink: 0; overflow: hidden; }
+        .profile-photo canvas { width: 100%; height: 100%; image-rendering: pixelated; }
+        .profile-info h3 { font-family: 'EarlyGameBoy', monospace; font-size: 14px; color: var(--gray-700); margin-bottom: 14px; }
+        .profile-info p { font-size: 15px; line-height: 1.9; color: var(--gray-700); margin-bottom: 12px; }
+        .btn-row { display: flex; justify-content: flex-end; padding-top: 18px; border-top: 2px solid var(--gray-300); }
+        .btn-action { padding: 14px 36px; background: var(--gray-200); border: 3px solid; border-color: var(--gray-100) var(--gray-500) var(--gray-500) var(--gray-100); font-size: 14px; cursor: pointer; font-family: 'EarlyGameBoy', monospace; color: var(--gray-700); }
+        .btn-action:hover { background: var(--gray-300); }
+
+        .portfolio-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+.portfolio-item { background: var(--gray-200); border: 2px solid var(--gray-400); padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.portfolio-item:hover { background: #fffde7; transform: translateY(-2px); }
+.portfolio-item img { width: 100%; aspect-ratio: 1 / 1.5; object-fit: cover; background: white; border: 2px solid var(--gray-400); margin-bottom: 8px; }
+.portfolio-item span { font-size: 9px; font-family: 'EarlyGameBoy', monospace; color: var(--gray-600); }
+
+        .contact-card { background: var(--gray-200); border: 3px solid var(--gray-400); padding: 24px; }
+        .contact-item { display: flex; align-items: center; gap: 18px; margin-bottom: 18px; padding: 18px; background: var(--gray-100); border: 2px solid var(--gray-300); }
+        .contact-item:last-child { margin-bottom: 0; }
+        .contact-icon { width: 60px; height: 60px; background: var(--gray-300); border: 2px solid var(--gray-500); display: flex; align-items: center; justify-content: center; font-size: 24px; font-family: 'EarlyGameBoy', monospace; }
+        .contact-label { font-size: 11px; color: var(--gray-500); margin-bottom: 4px; font-family: 'EarlyGameBoy', monospace; }
+        .contact-value { font-size: 15px; color: var(--gray-700); line-height: 1.6; }
+        .contact-value a { color: #2266bb; text-decoration: none; }
+        .contact-value a:hover { text-decoration: underline; }
+
+        .resume-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .resume-card { background: var(--gray-200); border: 3px solid var(--gray-400); padding: 18px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .resume-card:hover { background: #fffde7; }
+        .resume-cover { height: 264px; background: var(--gray-100); border: 2px solid var(--gray-400); margin-bottom: 14px; overflow: hidden; }
+        .resume-cover img { width: 100%; height: 100%; object-fit: contain; }
+        .resume-title { font-size: 14px; font-family: 'EarlyGameBoy', monospace; margin-bottom: 12px; color: var(--gray-700); }
+        .btn-download { padding: 12px 24px; background: var(--gray-300); border: 2px solid; border-color: var(--gray-100) var(--gray-500) var(--gray-500) var(--gray-100); font-size: 13px; cursor: pointer; font-family: 'EarlyGameBoy', monospace; color: var(--gray-700); }
+        .btn-download:hover { background: var(--gray-400); }
+
+        #project-detail-window { width: 1140px; height: 840px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        #project-detail-window .window-content { height: calc(100% - 48px); overflow-y: auto; background: var(--gray-100); border: 2px solid var(--gray-400); margin: 10px; padding: 36px 48px; }
+
+        .project-hero { text-align: center; margin-bottom: 42px; padding-bottom: 30px; border-bottom: 3px solid var(--gray-300); }
+        .project-hero h1 { font-family: 'EarlyGameBoy', monospace; font-size: 24px; color: var(--gray-700); margin-bottom: 14px; letter-spacing: 2px; }
+        .project-hero .subtitle { font-size: 16px; color: var(--gray-600); font-style: italic; }
+        .project-hero .project-tags { margin-top: 16px; }
+        .project-hero .project-tag {
+            display: inline-block; background: var(--gray-600); color: var(--gray-100);
+            padding: 6px 14px; font-size: 11px; font-family: 'EarlyGameBoy', monospace; margin: 4px;
+        }
+
+        .project-section { margin-bottom: 42px; }
+        .project-section h2 { font-family: 'EarlyGameBoy', monospace; font-size: 13px; color: var(--gray-700); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px dashed var(--gray-400); letter-spacing: 1px; }
+        .project-section p { font-size: 15px; line-height: 2; color: var(--gray-700); margin-bottom: 18px; text-align: justify; }
+        .project-img { width: 100%; border: 3px solid var(--gray-400); margin: 24px 0; display: block; }
+        
+        .btn-figma { 
+            display: inline-block; padding: 18px 42px; 
+            background: var(--gray-700); 
+            border: 3px solid; border-color: var(--gray-600) var(--gray-800) var(--gray-800) var(--gray-600); 
+            font-size: 14px; cursor: pointer; font-family: 'EarlyGameBoy', monospace; 
+            color: var(--gray-100); text-decoration: none; margin: 10px;
+            transition: all 0.2s;
+        }
+        .btn-figma:hover { background: var(--gray-600); }
+        
+        .btn-prototype {
+            display: inline-block; padding: 18px 42px; 
+            background: #5a7a9a; 
+            border: 3px solid; border-color: #7a9aba #3a5a7a #3a5a7a #7a9aba; 
+            font-size: 14px; cursor: pointer; font-family: 'EarlyGameBoy', monospace; 
+            color: var(--gray-100); text-decoration: none; margin: 10px;
+            transition: all 0.2s;
+        }
+        .btn-prototype:hover { background: #4a6a8a; }
+        
+        .project-footer { text-align: center; padding-top: 30px; border-top: 3px solid var(--gray-300); margin-top: 36px; }
+
+        .tab-content::-webkit-scrollbar, #project-detail-window .window-content::-webkit-scrollbar { width: 14px; }
+        .tab-content::-webkit-scrollbar-track, #project-detail-window .window-content::-webkit-scrollbar-track { background: var(--gray-300); }
+        .tab-content::-webkit-scrollbar-thumb, #project-detail-window .window-content::-webkit-scrollbar-thumb { background: var(--gray-500); border: 2px solid var(--gray-300); }
+    </style>
+</head>
+<body>
+    <div id="desktop">
+        <canvas id="pixel-background"></canvas>
+
+        <div id="language-switcher">
+            <button class="lang-btn active" id="lang-en">EN</button>
+            <button class="lang-btn" id="lang-zh">中文</button>
+        </div>
+
+        <div id="header-text">
+            <h1>Jiahao "Kasper" Xu</h1>
+            <h2 data-en="Storyteller & Builder" data-zh="叙事者与创造者">Storyteller & Builder</h2>
+        </div>
+
+        <div id="sidebar">
+            <div class="sidebar-handle">MENU</div>
+            <div class="sidebar-content">
+                <button class="sidebar-item" id="nav-about" data-tab="0" data-en="ABOUT ME" data-zh="关于我">ABOUT ME</button>
+                <button class="sidebar-item" id="nav-portfolio" data-tab="1" data-en="PORTFOLIO" data-zh="作品集">PORTFOLIO</button>
+                <button class="sidebar-item" id="nav-contact" data-tab="2" data-en="CONTACT" data-zh="联系方式">CONTACT</button>
+                <button class="sidebar-item" id="nav-resume" data-tab="3" data-en="RESUME" data-zh="简历">RESUME</button>
+            </div>
+        </div>
+
+        <!-- 项目1: BLADE APP -->
+        <div class="project-tab-window" data-project="1">
+            <div class="window-header">BLADE APP</div>
+            <div class="window-subtitle">
+                <span data-en="Fencing Referee Assistant" data-zh="击剑裁判辅助系统">Fencing Referee Assistant</span>
+                <div>
+                    <span class="project-tag" data-en="AI Product Strategy" data-zh="AI产品策略">AI Product Strategy</span>
+                    <span class="project-tag" data-en="Data Vis" data-zh="数据可视化">Data Vis</span>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="project-cover"><img src="https://i.postimg.cc/hPLJP378/blade-app.jpg" alt="BLADE APP"></div>
+                <div class="project-hint" data-en="Click to open" data-zh="点击打开">Click to open</div>
+            </div>
+        </div>
+
+        <!-- 项目2: 37 Days of Us -->
+        <div class="project-tab-window" data-project="2">
+            <div class="window-header">37 Days of Us</div>
+            <div class="window-subtitle">
+                <span data-en="37 Days of Connection" data-zh="37天的我们">37 Days of Connection</span>
+                <div>
+                    <span class="project-tag" data-en="Interactive Narrative" data-zh="互动叙事">Interactive Narrative</span>
+                    <span class="project-tag" data-en="Game Design" data-zh="游戏设计">Game Design</span>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="project-cover"><img src="https://i.postimg.cc/ZK89KDyB/37days.jpg" alt="37 Days of Us"></div>
+                <div class="project-hint" data-en="Click to open" data-zh="点击打开">Click to open</div>
+            </div>
+        </div>
+
+        <!-- 项目3: CosPedia -->
+        <div class="project-tab-window" data-project="3">
+            <div class="window-header">CosPedia!!!!</div>
+            <div class="window-subtitle">
+                <span data-en="Cosplay Community Wiki" data-zh="Cosplay社区百科">Cosplay Community Wiki</span>
+                <div>
+                    <span class="project-tag" data-en="Community Platform" data-zh="社区平台">Community Platform</span>
+                    <span class="project-tag" data-en="Web Design" data-zh="网页设计">Web Design</span>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="project-cover"><img src="https://i.postimg.cc/XYkTyQ7m/Cospedia.png" alt="CosPedia"></div>
+                <div class="project-hint" data-en="Click to open" data-zh="点击打开">Click to open</div>
+            </div>
+        </div>
+
+        <!-- 项目4: PetGuardian -->
+        <div class="project-tab-window" data-project="4">
+            <div class="window-header">PetGuardian</div>
+            <div class="window-subtitle">
+                <span data-en="Pet First Aid AR" data-zh="宠物急救AR">Pet First Aid AR</span>
+                <div>
+                    <span class="project-tag" data-en="AR Experience" data-zh="AR体验">AR Experience</span>
+                    <span class="project-tag" data-en="AI Integration" data-zh="AI集成">AI Integration</span>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="project-cover"><img src="https://i.postimg.cc/4N6KNFhz/petguardian.jpg" alt="PetGuardian"></div>
+                <div class="project-hint" data-en="Click to open" data-zh="点击打开">Click to open</div>
+            </div>
+        </div>
+
+        <!-- 项目5: TrustTrack -->
+        <div class="project-tab-window" data-project="5">
+            <div class="window-header">TrustTrack</div>
+            <div class="window-subtitle">
+                <span data-en="Transit Trust System" data-zh="公交信任系统">Transit Trust System</span>
+                <div>
+                    <span class="project-tag" data-en="UX Research" data-zh="用户研究">UX Research</span>
+                    <span class="project-tag" data-en="Interaction Design" data-zh="交互设计">Interaction Design</span>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="project-cover"><img src="https://i.postimg.cc/KvPKvsgf/Trust-Track.png" alt="TrustTrack"></div>
+                <div class="project-hint" data-en="Click to open" data-zh="点击打开">Click to open</div>
+            </div>
+        </div>
+
+        <div id="footer-text">
+            <p data-en="From Complex to Clear. From Data to Emotion." data-zh="从繁杂到清晰，从数据到情感。">From Complex to Clear. From Data to Emotion.</p>
+        </div>
+
+        <div id="modal-overlay"></div>
+
+        <div id="about-me-window" class="modal-window">
+            <div class="window-header">
+                <span class="window-title" data-en="ABOUT ME" data-zh="关于我">ABOUT ME</span>
+                <div class="window-controls">
+                    <button class="btn-minimize">−</button>
+                    <button class="btn-close-win">×</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="tabs-container">
+                    <button class="tab-btn active" data-tab="0" data-en="About" data-zh="关于">About</button>
+                    <button class="tab-btn" data-tab="1" data-en="Portfolio" data-zh="作品集">Portfolio</button>
+                    <button class="tab-btn" data-tab="2" data-en="Contact" data-zh="联系">Contact</button>
+                    <button class="tab-btn" data-tab="3" data-en="Resume" data-zh="简历">Resume</button>
+                </div>
+
+                <div class="tab-content active" data-panel="0">
+                    <div class="tab-inner">
+                        <div class="profile-row">
+                            <div class="profile-photo"><canvas id="avatar-canvas" width="64" height="64"></canvas></div>
+                            <div class="profile-info">
+                                <h3 id="about-greeting"></h3>
+                                <p id="about-p1"></p>
+                                <p id="about-p2"></p>
+                            </div>
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn-action btn-close-modal" data-en="CLOSE" data-zh="关闭">CLOSE</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-panel="1">
+                    <div class="tab-inner">
+                        <p style="margin-bottom:18px; font-family: 'EarlyGameBoy', monospace; font-size: 12px; color: var(--gray-500);" data-en="Click project to view details:" data-zh="点击项目查看详情：">Click project to view details:</p>
+                        <div class="portfolio-grid">
+                            <div class="portfolio-item" data-project="1"><img src="https://i.postimg.cc/hPLJP378/blade-app.jpg" alt=""><span>BLADE APP</span></div>
+                            <div class="portfolio-item" data-project="2"><img src="https://i.postimg.cc/ZK89KDyB/37days.jpg" alt=""><span>37 Days of Us</span></div>
+                            <div class="portfolio-item" data-project="3"><img src="https://i.postimg.cc/XYkTyQ7m/Cospedia.png" alt=""><span>CosPedia!!!!</span></div>
+                            <div class="portfolio-item" data-project="4"><img src="https://i.postimg.cc/4N6KNFhz/petguardian.jpg" alt=""><span>PetGuardian</span></div>
+                            <div class="portfolio-item" data-project="5"><img src="https://i.postimg.cc/KvPKvsgf/Trust-Track.png" alt=""><span>TrustTrack</span></div>
+                        </div>
+                        <button class="btn-action" id="download-portfolio" data-en="DOWNLOAD PORTFOLIO PDF" data-zh="下载作品集PDF">DOWNLOAD PORTFOLIO PDF</button>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-panel="2">
+                    <div class="tab-inner">
+                        <div class="contact-card">
+                            <div class="contact-item">
+                                <div class="contact-icon">@</div>
+                                <div>
+                                    <div class="contact-label">EMAIL</div>
+                                    <div class="contact-value"><a href="mailto:jx436@cornell.edu">jx436@cornell.edu</a><br><a href="mailto:kasper.j.xu@gmail.com">kasper.j.xu@gmail.com</a></div>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">T</div>
+                                <div>
+                                    <div class="contact-label" data-en="PHONE" data-zh="电话">PHONE</div>
+                                    <div class="contact-value">+1 (607) 339 8494<br>+86 188 9205 0111</div>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">in</div>
+                                <div>
+                                    <div class="contact-label">LINKEDIN</div>
+                                    <div class="contact-value"><a href="https://www.linkedin.com/in/jiahao-xu-73711028a/" target="_blank">linkedin.com/in/jiahao-xu</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-panel="3">
+                    <div class="tab-inner">
+                        <p style="margin-bottom:24px; font-family: 'EarlyGameBoy', monospace; font-size: 12px; color: var(--gray-500);" data-en="Download resume:" data-zh="下载简历：">Download resume:</p>
+                        <div class="resume-grid">
+                            <div class="resume-card" id="resume-en">
+                                <div class="resume-cover"><img src="https://i.postimg.cc/43vfDJCM/ying-wen-jian-li.png" alt="English Resume"></div>
+                                <div class="resume-title">English Resume</div>
+                                <button class="btn-download" data-en="DOWNLOAD" data-zh="下载">DOWNLOAD</button>
+                            </div>
+                            <div class="resume-card" id="resume-zh">
+                                <div class="resume-cover"><img src="https://i.postimg.cc/g0yzCY9f/zhong-wen-jian-li.png" alt="中文简历"></div>
+                                <div class="resume-title">中文简历</div>
+                                <button class="btn-download" data-en="DOWNLOAD" data-zh="下载">DOWNLOAD</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="project-detail-window" class="modal-window">
+            <div class="window-header">
+                <span class="window-title">Project Detail</span>
+                <div class="window-controls">
+                    <button class="btn-minimize">−</button>
+                    <button class="btn-close-win">×</button>
+                </div>
+            </div>
+            <div class="window-content" id="project-content"></div>
+        </div>
+    </div>
+
+    <script>
+    $(function() {
+        let currentLang = 'en';
+        
+        const colorThemes = [
+            { name: 'green', light: [214, 215, 90], dark: [169, 170, 30] },
+            { name: 'orange', light: [232, 183, 90], dark: [194, 137, 32] },
+            { name: 'purple', light: [186, 160, 210], dark: [138, 112, 170] }
+        ];
+        const currentTheme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
+
+        const aboutTexts = {
+            en: {
+                greeting: "HI! I'M JIAHAO \"KASPER\" XU, A STORYTELLER & BUILDER.",
+                p1: "As a graduate student in Information Science at Cornell University, I believe the best products are born at the intersection of logic and emotion. I blend data, strategy, and design to build meaningful experiences—transforming complex requirements into solutions that connect with people, whether through a game, an app, or a business product.",
+                p2: "Off-screen, you can find me fencing on the strip, diving into novels, or experimenting with home cooking."
+            },
+            zh: {
+                greeting: "嗨！我是徐嘉豪 \"Kasper\"，一名叙事者与创造者。",
+                p1: "作为康奈尔大学信息科学专业的研究生，我相信最优秀的产品诞生于逻辑与情感的交汇处。我融合数据、策略与设计，致力于构建有意义的体验——将复杂的需求转化为能与人产生连接的解决方案，无论是游戏、APP 还是商业产品。",
+                p2: "屏幕之外，我通常活跃在击剑道上，或是沉浸于书籍，亦或是钻研一些家常菜谱。"
+            }
+        };
+
+        // 项目数据 - 完整版本
+        const projectData = {
+            // 项目1: BLADE APP
+            // 项目1: BLADE APP
+1: { 
+    figmaUrl: 'https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-92&t=nufhqmaOxHUAyiPW-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1',
+    en: { 
+        title: 'BLADE APP', 
+        subtitle: 'Smart Fencing Assistant & Referee System',
+        tags: ['AI Product Strategy', 'Data Visualization'],
+        content: `
+            <div class="project-hero">
+                <h1>BLADE APP</h1>
+                <p class="subtitle">Smart Fencing Assistant & Referee System</p>
+                <div class="project-tags">
+                    <span class="project-tag">AI Product Strategy</span>
+                    <span class="project-tag">Data Visualization</span>
+                </div>
+            </div>
+            <div class="project-section">
+                <img class="project-img" src="https://i.postimg.cc/MGL66y69/Portfolio-Xu-Jiahao-page-0001.jpg" alt="Blade App Page 1">
+                <img class="project-img" src="https://i.postimg.cc/xCb0ccqk/Portfolio-Xu-Jiahao-page-0002.jpg" alt="Blade App Page 2">
+                <img class="project-img" src="https://i.postimg.cc/C1fFzzd5/Portfolio-Xu-Jiahao-page-0003.jpg" alt="Blade App Page 3">
+                <img class="project-img" src="https://i.postimg.cc/nzQHCCMH/Portfolio-Xu-Jiahao-page-0004.jpg" alt="Blade App Page 4">
+                <img class="project-img" src="https://i.postimg.cc/26BzVV3b/Portfolio-Xu-Jiahao-page-0005.jpg" alt="Blade App Page 5">
+            </div>
+            <div class="project-footer">
+                <a href="https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-92&t=nufhqmaOxHUAyiPW-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" class="btn-figma">VIEW IN FIGMA →</a>
+            </div>
+        ` 
+    }, 
+    zh: { 
+        title: 'BLADE APP', 
+        subtitle: '智能击剑辅助与裁判系统',
+        tags: ['AI产品策略', '数据可视化'],
+        content: `
+            <div class="project-hero">
+                <h1>BLADE APP</h1>
+                <p class="subtitle">智能击剑辅助与裁判系统</p>
+                <div class="project-tags">
+                    <span class="project-tag">AI产品策略</span>
+                    <span class="project-tag">数据可视化</span>
+                </div>
+            </div>
+            <div class="project-section">
+                <img class="project-img" src="https://i.postimg.cc/MGL66y69/Portfolio-Xu-Jiahao-page-0001.jpg" alt="Blade App Page 1">
+                <img class="project-img" src="https://i.postimg.cc/xCb0ccqk/Portfolio-Xu-Jiahao-page-0002.jpg" alt="Blade App Page 2">
+                <img class="project-img" src="https://i.postimg.cc/C1fFzzd5/Portfolio-Xu-Jiahao-page-0003.jpg" alt="Blade App Page 3">
+                <img class="project-img" src="https://i.postimg.cc/nzQHCCMH/Portfolio-Xu-Jiahao-page-0004.jpg" alt="Blade App Page 4">
+                <img class="project-img" src="https://i.postimg.cc/26BzVV3b/Portfolio-Xu-Jiahao-page-0005.jpg" alt="Blade App Page 5">
+            </div>
+            <div class="project-footer">
+                <a href="https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-92&t=nufhqmaOxHUAyiPW-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" class="btn-figma">在 FIGMA 中查看 →</a>
+            </div>
+        ` 
+    } 
+},
+
+            // 项目2: 37 Days of Us
+            // 项目2: 37 Days of Us
+2: { 
+    figmaUrl: 'https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-113&t=nufhqmaOxHUAyiPW-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1',
+    en: { 
+        title: '37 Days of Us', 
+        subtitle: 'Interactive Narrative Game',
+        tags: ['Interactive Narrative', 'Game Design'],
+        content: `
+            <div class="project-hero">
+                <h1>37 DAYS OF US</h1>
+                <p class="subtitle">Interactive Narrative Game Exploring Interpersonal Relationships</p>
+                <div class="project-tags">
+                    <span class="project-tag">Interactive Narrative</span>
+                    <span class="project-tag">Game Design</span>
+                </div>
+            </div>
+            <div class="project-section">
+                <img class="project-img" src="https://i.postimg.cc/WzLsrTJ0/Portfolio-Xu-Jiahao-page-0006.jpg" alt="37 Days Page 1">
+                <img class="project-img" src="https://i.postimg.cc/KjPxDwnV/Portfolio-Xu-Jiahao-page-0007.jpg" alt="37 Days Page 2">
+                <img class="project-img" src="https://i.postimg.cc/C5GSsXGR/Portfolio-Xu-Jiahao-page-0008.jpg" alt="37 Days Page 3">
+                <img class="project-img" src="https://i.postimg.cc/NGmst9W8/Portfolio-Xu-Jiahao-page-0009.jpg" alt="37 Days Page 4">
+                <img class="project-img" src="https://i.postimg.cc/05DkvMLH/Portfolio-Xu-Jiahao-page-0010.jpg" alt="37 Days Page 5">
+            </div>
+            <div class="project-footer">
+                <a href="https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-113&t=nufhqmaOxHUAyiPW-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" class="btn-figma">VIEW IN FIGMA →</a>
+            </div>
+        ` 
+    }, 
+    zh: { 
+        title: '我们的37天', 
+        subtitle: '互动叙事游戏',
+        tags: ['互动叙事', '游戏设计'],
+        content: `
+            <div class="project-hero">
+                <h1>我们的37天</h1>
+                <p class="subtitle">探索人际关系的互动叙事游戏</p>
+                <div class="project-tags">
+                    <span class="project-tag">互动叙事</span>
+                    <span class="project-tag">游戏设计</span>
+                </div>
+            </div>
+            <div class="project-section">
+                <img class="project-img" src="https://i.postimg.cc/WzLsrTJ0/Portfolio-Xu-Jiahao-page-0006.jpg" alt="37 Days Page 1">
+                <img class="project-img" src="https://i.postimg.cc/KjPxDwnV/Portfolio-Xu-Jiahao-page-0007.jpg" alt="37 Days Page 2">
+                <img class="project-img" src="https://i.postimg.cc/C5GSsXGR/Portfolio-Xu-Jiahao-page-0008.jpg" alt="37 Days Page 3">
+                <img class="project-img" src="https://i.postimg.cc/NGmst9W8/Portfolio-Xu-Jiahao-page-0009.jpg" alt="37 Days Page 4">
+                <img class="project-img" src="https://i.postimg.cc/05DkvMLH/Portfolio-Xu-Jiahao-page-0010.jpg" alt="37 Days Page 5">
+            </div>
+            <div class="project-footer">
+                <a href="https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-113&t=nufhqmaOxHUAyiPW-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" class="btn-figma">在 FIGMA 中查看 →</a>
+            </div>
+        ` 
+    } 
+},
+
+            // 项目3: CosPedia
+            3: { 
+                figmaUrl: 'https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-134&t=7pz2WML5eZGzrIaz-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1',
+                en: { 
+                    title: 'CosPedia!!!!', 
+                    subtitle: 'Cosplay Community Wiki',
+                    tags: ['Community Platform', 'Web Design'],
+                    content: `
+                        <div class="project-hero">
+                            <h1>COSPEDIA!!!!</h1>
+                            <p class="subtitle">Open-source Communication Platform for Cosplay Community</p>
+                            <div class="project-tags">
+                                <span class="project-tag">Community Platform</span>
+                                <span class="project-tag">Web Design</span>
+                            </div>
+                        </div>
+                        <div class="project-section">
+                            <h2>BACKGROUND & COSER INTERVIEW</h2>
+                            <p>CosPedia is an open-source communication platform designed to address three critical issues in the cosplay community: online toxicity (cyberbullying over minor costume flaws), unfair "OOC" (Out of Character) criticism (harsh judgment for creative adjustments), and market polarization (top cosplayers receive support while newcomers struggle). Through in-depth interviews, users revealed key pain points: time and budget constraints, online negativity discouraging creativity, and lack of community support for niche characters. Cosplayers expressed strong demand for inspiration resources, collaborative tools, and a kind community that boosts confidence.</p>
+                            <img class="project-img" src="https://i.postimg.cc/QCC8N0KY/Portfolio-Xu-Jiahao-page-0011.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>MARKET RESEARCH & DEMAND ANALYSIS</h2>
+                            <p>Market research identified core challenges: obtaining props (high customization costs) and time management (need for experience sharing). Users demand support in event organization, costumes/props acquisition, learning platforms, and cultural promotion. The platform feature interest analysis shows high enthusiasm for character libraries, collaborative tools, and tutorials, with positive reception to shopping services, virtual try-ons, and community interaction. Market sentiment data (2020-2024) reveals increasing satisfaction and decreasing dissatisfaction, indicating growing market readiness for comprehensive cosplay platforms.</p>
+                            <img class="project-img" src="https://i.postimg.cc/9XgXg5v5/Portfolio-Xu-Jiahao-page-0012.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>USER FLOW & WIREFRAME STRUCTURE</h2>
+                            <p>The user flow maps the complete journey from Sign In/Sign Up through four core modules: Symphony! (collaborative cosplay editing with multi-stage feedback), Library! (character database with tutorials and resources), Puzzle! (creative character creation and reinterpretation tools), and Canvas! (community showcase for sharing insights and tips). The wireframe structure demonstrates clear information architecture with detailed page hierarchies for each module, including main pages, secondary information pages, and edit status interfaces, ensuring intuitive navigation across all functionalities.</p>
+                            <img class="project-img" src="https://i.postimg.cc/DfpfpktL/Portfolio-Xu-Jiahao-page-0013.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>HI-FI DESIGN SHOWCASE</h2>
+                            <p>The high-fidelity designs present a polished, user-friendly interface across all key screens: Sign In/Sign Up pages with welcoming visuals, Homepage featuring waterfall browsing for content discovery, Symphony! pages showing collaborative project stages (First Movement to Final Movement), Library! information pages with comprehensive character details, Puzzle! creative workspace for mixing character elements, and Canvas! community gallery showcasing user tutorials. The visual design emphasizes clean typography, intuitive iconography, and a cohesive color scheme that balances professionalism with creative energy.</p>
+                            <img class="project-img" src="https://i.postimg.cc/026kLXsb/Portfolio-Xu-Jiahao-page-0014.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>EDITING STYLE & USER STORYBOARD</h2>
+                            <p>CosPedia offers two editing approaches: Visual Editing (automatic page partitioning with intuitive drag-and-drop modifications for quick text/image manipulation) and Source Code Editing (wikitext/HTML syntax for advanced effects like deletion lines and quotes). The storyboard follows Adma's journey: struggling with negative criticism and self-doubt, discovering CosPedia through a friend's recommendation, using Symphony! to receive positive project feedback, exploring Library! for niche character research, customizing original characters in Puzzle! through collaboration, sharing expertise on Canvas! to help newcomers, and ultimately finding fulfillment and belonging in the supportive community.</p>
+                            <img class="project-img" src="https://i.postimg.cc/fT3z6qNg/Portfolio-Xu-Jiahao-page-0015.jpg" alt="">
+                        </div>
+                        <div class="project-footer">
+                            <a href="https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-134&t=7pz2WML5eZGzrIaz-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" class="btn-figma">VIEW IN FIGMA →</a>
+                        </div>
+                    ` 
+                }, 
+                zh: { 
+                    title: 'CosPedia!!!!', 
+                    subtitle: 'Cosplay社区百科',
+                    tags: ['社区平台', '网页设计'],
+                    content: `
+                        <div class="project-hero">
+                            <h1>COSPEDIA!!!!</h1>
+                            <p class="subtitle">面向Cosplay社区的开源交流平台</p>
+                            <div class="project-tags">
+                                <span class="project-tag">社区平台</span>
+                                <span class="project-tag">网页设计</span>
+                            </div>
+                        </div>
+                        <div class="project-section">
+                            <h2>项目背景与用户访谈</h2>
+                            <p>CosPedia是一个开源交流平台,旨在解决cosplay社区的三个关键问题:网络暴力(因细微服装瑕疵遭受网络霸凌)、不公平的"OOC"(角色崩坏)批评(对创意调整的严厉评判)以及市场两极分化(头部coser获得支持而新人挣扎)。通过深度访谈,用户揭示了关键痛点:时间和预算限制、网络负面情绪打击创造力、缺乏对小众角色的社区支持。Coser们表达了对灵感资源、协作工具和能提升信心的友善社区的强烈需求。</p>
+                            <img class="project-img" src="https://i.postimg.cc/QCC8N0KY/Portfolio-Xu-Jiahao-page-0011.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>市场调研与需求分析</h2>
+                            <p>市场调研识别了核心挑战:获取道具(高定制成本)和时间管理(需要经验分享)。用户需要活动组织、服装/道具获取、学习平台和文化推广方面的支持。平台功能兴趣分析显示用户对角色库、协作工具和教程有极高热情,对代购服务、虚拟试穿和社区互动反响积极。市场情绪数据(2020-2024)显示满意度上升、不满意度下降,表明市场对综合性cosplay平台的接受度日益增强。</p>
+                            <img class="project-img" src="https://i.postimg.cc/9XgXg5v5/Portfolio-Xu-Jiahao-page-0012.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>用户流程与线框图结构</h2>
+                            <p>用户流程图绘制了从登录/注册到四个核心模块的完整旅程:Symphony!(多阶段反馈的协作cosplay编辑)、Library!(带教程和资源的角色数据库)、Puzzle!(创意角色创作和重新诠释工具)以及Canvas!(分享见解和技巧的社区展示台)。线框图结构展示了清晰的信息架构,包含每个模块的详细页面层级,包括主页面、二级信息页面和编辑状态界面,确保所有功能的直观导航。</p>
+                            <img class="project-img" src="https://i.postimg.cc/DfpfpktL/Portfolio-Xu-Jiahao-page-0013.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>高保真界面设计展示</h2>
+                            <p>高保真设计呈现了所有关键页面的精致、用户友好界面:具有欢迎视觉效果的登录/注册页面、采用瀑布流浏览实现内容发现的主页、展示协作项目阶段(从第一乐章到最终乐章)的Symphony!页面、包含全面角色细节的Library!信息页面、用于混合角色元素的Puzzle!创意工作区,以及展示用户教程的Canvas!社区画廊。视觉设计强调清晰的排版、直观的图标和平衡专业性与创意活力的统一配色方案。</p>
+                            <img class="project-img" src="https://i.postimg.cc/026kLXsb/Portfolio-Xu-Jiahao-page-0014.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>编辑模式与用户故事</h2>
+                            <p>CosPedia提供两种编辑方式:可视化编辑(自动页面分区,通过直观的拖放修改实现快速文本/图像操作)和源代码编辑(使用wikitext/HTML语法实现删除线和引用等高级效果)。故事板跟随Adma的旅程:因负面批评和自我怀疑而挣扎、通过朋友推荐发现CosPedia、使用Symphony!获得积极的项目反馈、在Library!中探索小众角色研究、通过协作在Puzzle!中定制原创角色、在Canvas!上分享专业知识帮助新手,最终在支持性社区中找到满足感和归属感。</p>
+                            <img class="project-img" src="https://i.postimg.cc/fT3z6qNg/Portfolio-Xu-Jiahao-page-0015.jpg" alt="">
+                        </div>
+                        <div class="project-footer">
+                            <a href="https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-134&t=7pz2WML5eZGzrIaz-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" class="btn-figma">在 FIGMA 中查看 →</a>
+                        </div>
+                    ` 
+                } 
+            },
+            
+            // 项目4: PetGuardian
+            4: { 
+                figmaUrl: 'https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-155&t=7pz2WML5eZGzrIaz-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1',
+                en: { 
+                    title: 'PetGuardian', 
+                    subtitle: 'AR Pet First Aid System',
+                    tags: ['AR Experience', 'AI Integration'],
+                    content: `
+                        <div class="project-hero">
+                            <h1>PETGUARDIAN</h1>
+                            <p class="subtitle">AR-based First Aid Guidance for Pet Emergencies</p>
+                            <div class="project-tags">
+                                <span class="project-tag">AR Experience</span>
+                                <span class="project-tag">AI Integration</span>
+                            </div>
+                        </div>
+                        <div class="project-section">
+                            <h2>BACKGROUND & PROBLEMS</h2>
+                            <p>PetGuardian is an intelligent pet care system addressing critical challenges faced by modern pet owners. The background reveals alarming statistics: 40% of pet owners report difficulty managing their pets' health, 65% struggle to understand behavioral cues, and 50% face challenges monitoring pets remotely. Key problems include: lack of real-time health monitoring (owners miss early warning signs of illness), communication barriers (inability to interpret pet emotions and needs), time constraints (busy schedules prevent consistent care), and emergency response delays (slow reaction to dangerous situations). The platform aims to bridge the gap between pet welfare and owner lifestyles.</p>
+                            <img class="project-img" src="https://i.postimg.cc/J49rm377/Portfolio-Xu-Jiahao-page-0016.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>QUESTIONNAIRE & USER INSIGHTS</h2>
+                            <p>Comprehensive questionnaire data reveals detailed user profiles and pain points. Survey results show: 70% of respondents are female pet owners aged 25-35, primarily caring for dogs and cats. Daily challenges include monitoring pet activities (68%), recognizing health issues (72%), and managing feeding schedules (55%). Users express high demand for real-time video monitoring (85%), health tracking alerts (78%), behavioral analysis (65%), and emergency notifications (90%). Interest in AR interaction features reaches 62%, while willingness to pay for premium services stands at 48%, indicating strong market potential for integrated smart pet care solutions.</p>
+                            <img class="project-img" src="https://i.postimg.cc/P5YtqLNp/Portfolio-Xu-Jiahao-page-0017.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>USER FLOW & LOFI STRUCTURE</h2>
+                            <p>The user flow maps the complete experience journey: starting from Login/Register, users access the Homepage with four main pathways - Real-Time Monitoring (live video feed with AI analysis), Health Dashboard (tracking vitals and activity patterns), AR Interaction (virtual play and training), and Community (sharing experiences with other pet owners). The low-fidelity wireframe structure demonstrates clear navigation hierarchy: main dashboard displaying pet status overview, monitoring interface with alert systems, health records with historical data visualization, AR module with gesture controls, and settings panel for device management and notification preferences.</p>
+                            <img class="project-img" src="https://i.postimg.cc/k5C7Rntc/Portfolio-Xu-Jiahao-page-0018.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>CODE IMPLEMENTATION & AR VISUALIZATION</h2>
+                            <p>The technical implementation showcases three core technologies: (1) YOLO Real-Time Pet Detection - using deep learning models for instant pet recognition, pose estimation, and activity classification with 95% accuracy; (2) Behavioral Analysis Code - Python algorithms processing movement patterns, eating habits, and sleep cycles to detect anomalies; (3) AR Visualization & Interaction - Unity-based augmented reality allowing owners to project virtual toys, training guides, and health indicators onto live camera feeds. The system integrates IoT sensors, cloud data processing, and mobile AR rendering to create seamless real-time interactions between owners and pets regardless of physical distance.</p>
+                            <img class="project-img" src="https://i.postimg.cc/GpjdkZFt/Portfolio-Xu-Jiahao-page-0019.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>HIFI DESIGN SHOWCASE</h2>
+                            <p>The high-fidelity designs present a refined, pet-centric interface: Homepage features personalized pet profiles with quick-access health metrics and activity summaries. Real-Time Monitoring displays multi-angle camera views with AI-powered behavior tags (playing, resting, eating) and instant alert buttons. Health Dashboard showcases intuitive data visualizations including heart rate graphs, step counters, and weight trends with color-coded wellness indicators. AR Interaction screens demonstrate playful virtual elements overlaid on live feeds with gesture-based controls. Community pages enable photo sharing, care tips exchange, and vet consultations. The cohesive design language uses warm colors, friendly icons, and clear typography to create an emotionally engaging yet functional experience.</p>
+                            <img class="project-img" src="https://i.postimg.cc/wvTHF02m/Portfolio-Xu-Jiahao-page-0020.jpg" alt="">
+                        </div>
+                        <div class="project-footer">
+                            <a href="https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-155&t=7pz2WML5eZGzrIaz-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" class="btn-figma">VIEW IN FIGMA →</a>
+                        </div>
+                    ` 
+                }, 
+                zh: { 
+                    title: 'PetGuardian', 
+                    subtitle: 'AR宠物急救系统',
+                    tags: ['AR体验', 'AI集成'],
+                    content: `
+                        <div class="project-hero">
+                            <h1>PETGUARDIAN</h1>
+                            <p class="subtitle">基于AR的宠物急救指导应用</p>
+                            <div class="project-tags">
+                                <span class="project-tag">AR体验</span>
+                                <span class="project-tag">AI集成</span>
+                            </div>
+                        </div>
+                        <div class="project-section">
+                            <h2>项目背景与核心问题</h2>
+                            <p>PetGuardian是一个智能宠物护理系统,解决现代宠物主人面临的关键挑战。背景数据令人警醒:40%的宠物主人表示难以管理宠物健康,65%难以理解行为信号,50%面临远程监控挑战。核心问题包括:缺乏实时健康监测(主人错过疾病早期预警信号)、沟通障碍(无法解读宠物情绪和需求)、时间限制(繁忙日程妨碍持续照护)以及紧急响应延迟(对危险情况反应迟缓)。该平台旨在弥合宠物福祉与主人生活方式之间的差距。</p>
+                            <img class="project-img" src="https://i.postimg.cc/J49rm377/Portfolio-Xu-Jiahao-page-0016.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>问卷调查与用户洞察</h2>
+                            <p>全面的问卷数据揭示了详细的用户画像和痛点。调查结果显示:70%的受访者是25-35岁的女性宠物主人,主要照顾狗和猫。日常挑战包括监控宠物活动(68%)、识别健康问题(72%)和管理喂食时间表(55%)。用户对实时视频监控(85%)、健康跟踪警报(78%)、行为分析(65%)和紧急通知(90%)表达了高度需求。对AR交互功能的兴趣达到62%,而为高级服务付费的意愿为48%,表明集成智能宠物护理解决方案具有强大的市场潜力。</p>
+                            <img class="project-img" src="https://i.postimg.cc/P5YtqLNp/Portfolio-Xu-Jiahao-page-0017.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>用户流程与低保真结构</h2>
+                            <p>用户流程图绘制了完整的体验旅程:从登录/注册开始,用户访问具有四条主要路径的主页——实时监控(带AI分析的实时视频流)、健康仪表板(追踪生命体征和活动模式)、AR互动(虚拟玩耍和训练)以及社区(与其他宠物主人分享经验)。低保真线框图结构展示了清晰的导航层级:显示宠物状态概览的主仪表板、带警报系统的监控界面、具有历史数据可视化的健康记录、带手势控制的AR模块,以及用于设备管理和通知偏好的设置面板。</p>
+                            <img class="project-img" src="https://i.postimg.cc/k5C7Rntc/Portfolio-Xu-Jiahao-page-0018.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>技术实现与AR可视化</h2>
+                            <p>技术实现展示了三项核心技术:(1)YOLO实时宠物检测——使用深度学习模型进行即时宠物识别、姿态估计和活动分类,准确率达95%;(2)行为分析代码——Python算法处理运动模式、饮食习惯和睡眠周期以检测异常;(3)AR可视化与交互——基于Unity的增强现实,允许主人将虚拟玩具、训练指南和健康指标投射到实时摄像头画面上。系统集成物联网传感器、云数据处理和移动AR渲染,创建主人与宠物之间无缝的实时互动,无论物理距离如何。</p>
+                            <img class="project-img" src="https://i.postimg.cc/GpjdkZFt/Portfolio-Xu-Jiahao-page-0019.jpg" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>高保真界面展示</h2>
+                            <p>高保真设计呈现了精致的以宠物为中心的界面:主页展示个性化宠物档案,配有快速访问的健康指标和活动摘要。实时监控显示多角度摄像头视图,带有AI驱动的行为标签(玩耍、休息、进食)和即时警报按钮。健康仪表板展示直观的数据可视化,包括心率图表、步数计数器和带颜色编码健康指标的体重趋势。AR互动界面展示覆盖在实时画面上的趣味虚拟元素,配有基于手势的控制。社区页面支持照片分享、护理技巧交流和兽医咨询。统一的设计语言使用温暖的颜色、友好的图标和清晰的排版,创造出既有情感吸引力又实用的体验。</p>
+                            <img class="project-img" src="https://i.postimg.cc/wvTHF02m/Portfolio-Xu-Jiahao-page-0020.jpg" alt="">
+                        </div>
+                        <div class="project-footer">
+                            <a href="https://www.figma.com/proto/Zu7NFOU7a22ElooATGfiSZ/Portfolio_Jiahao-Xu?node-id=2-155&t=7pz2WML5eZGzrIaz-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" class="btn-figma">在 FIGMA 中查看 →</a>
+                        </div>
+                    ` 
+                } 
+            },
+            
+            // 项目5: TrustTrack
+            5: { 
+                figmaUrl: 'https://www.figma.com/proto/nKfXmg3Buq8MapKh0RN8pX/Group-4-Assignment---Poster?node-id=266-2490&p=f&t=SFZT54Tq1EuRODjI-1&scaling=scale-down-width&content-scaling=fixed&page-id=247%3A3136',
+                prototypeUrl: 'https://www.figma.com/proto/nKfXmg3Buq8MapKh0RN8pX/Group-4-Assignment---Poster?node-id=104-27726&t=GG8ZfReLUzLP6gfq-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=104%3A27726&show-proto-sidebar=1',
+                en: { 
+                    title: 'TrustTrack', 
+                    subtitle: 'Transit Trust System',
+                    tags: ['UX Research', 'Interaction Design'],
+                    content: `
+                        <div class="project-hero">
+                            <h1>TRUSTTRACK</h1>
+                            <p class="subtitle">Reducing Transit Anxiety Through Crowdsourced Verification</p>
+                            <div class="project-tags">
+                                <span class="project-tag">UX Research</span>
+                                <span class="project-tag">Interaction Design</span>
+                            </div>
+                        </div>
+                        <div class="project-section">
+                            <h2>PROJECT OVERVIEW</h2>
+                            <p>TrustTrack is a transit app designed to restore trust in public transportation for international students through a unique "Trust Score" and real-time rider verification system. Completed over 2 weeks of high-fidelity iteration, the project addressed the critical "ghost bus" phenomenon in Ithaca, where unreliable schedules cause severe commute anxiety for newcomers.</p>
+                            <p><strong>The Core Problem:</strong> New students (Persona: "Wick") constantly ask: "Is the bus actually coming?" Existing apps provide official data but fail to deliver certainty, forcing users to cross-check multiple platforms and still feel helpless when buses disappear from screens.</p>
+                            <p><strong>The Solution:</strong> Rather than just showing "when" the bus arrives, TrustTrack shows "how reliable" that information is. Through crowdsourced validation and trust scores, users make confident decisions based on real-time community verification.</p>
+                        </div>
+                        <div class="project-section">
+                            <h2>RESEARCH PROCESS</h2>
+                            <p>Using Affinity Mapping, 80+ interview data points were synthesized into 8 thematic clusters revealing:</p>
+                            <p><strong>Trust Gap:</strong> Users don't trust official data and develop inefficient multi-app checking habits</p>
+                            <p><strong>Wayfinding Anxiety:</strong> Newcomers struggle mapping text descriptions to physical locations</p>
+                            <p><strong>Community Willingness:</strong> Users readily contribute real-time data when interaction is effortless (one-tap)</p>
+                            <img class="project-img" src="https://i.postimg.cc/g2Cbc1qP/Trust-Track.png" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>CRITICAL DESIGN ITERATIONS</h2>
+                            <p>Usability testing using the "Wizard of Oz" technique uncovered three priority fixes:</p>
+                            <p><strong>1. Map Logic Correction:</strong> Reversed visual markers to align with text input and mental models (Blue = Current Location)</p>
+                            <p><strong>2. Time Planning Feature:</strong> Added "Depart At/Arrive By" picker, restoring user control for class schedule planning</p>
+                            <p><strong>3. Notification Refinement:</strong> Replaced intrusive modal pop-ups with auto-dismissing toast notifications, reducing cognitive load</p>
+                        </div>
+                        <div class="project-section">
+                            <h2>KEY INSIGHT</h2>
+                            <p>Even the most innovative feature (Trust Score) fails if foundational usability (Map Interaction) is broken. Prioritizing fixes based on ROI ensures low-effort, high-impact improvements are addressed first.</p>
+                            <p><strong>Role:</strong> UX Researcher, Interaction Designer</p>
+                            <p><strong>Tools:</strong> Figma, Miro, Google Sheets</p>
+                            <p><strong>Methods:</strong> Heuristic Evaluation, Wizard of Oz Testing, Affinity Mapping</p>
+                        </div>
+                        <div class="project-footer">
+                            <a href="https://www.figma.com/proto/nKfXmg3Buq8MapKh0RN8pX/Group-4-Assignment---Poster?node-id=266-2490&p=f&t=SFZT54Tq1EuRODjI-1&scaling=scale-down-width&content-scaling=fixed&page-id=247%3A3136" target="_blank" class="btn-figma">VIEW IN FIGMA →</a>
+                            <a href="https://www.figma.com/proto/nKfXmg3Buq8MapKh0RN8pX/Group-4-Assignment---Poster?node-id=104-27726&t=GG8ZfReLUzLP6gfq-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=104%3A27726&show-proto-sidebar=1" target="_blank" class="btn-prototype">PLAY PROTOTYPE →</a>
+                        </div>
+                    ` 
+                }, 
+                zh: { 
+                    title: 'TrustTrack', 
+                    subtitle: '公交信任系统',
+                    tags: ['用户研究', '交互设计'],
+                    content: `
+                        <div class="project-hero">
+                            <h1>TRUSTTRACK</h1>
+                            <p class="subtitle">基于众包验证的公交出行信任体系</p>
+                            <div class="project-tags">
+                                <span class="project-tag">用户研究</span>
+                                <span class="project-tag">交互设计</span>
+                            </div>
+                        </div>
+                        <div class="project-section">
+                            <h2>项目概览</h2>
+                            <p>TrustTrack是一款为留学生设计的公交应用,通过独特的"信任评分"和实时乘客验证系统重建公共交通信任。项目在2周高保真迭代中完成,解决了伊萨卡地区的"幽灵公交"现象,该现象给新生带来严重的通勤焦虑。</p>
+                            <p><strong>核心痛点：</strong>新生(用户画像"Wick")反复询问:"公交车真的会来吗?"现有应用只提供官方数据却无法给予确定性,迫使用户在多个平台间交叉验证,当公交从屏幕上消失时仍感到无助。</p>
+                            <p><strong>解决方案：</strong>TrustTrack不仅显示公交"何时"到达,更展示信息"有多可靠"。通过众包验证和信任评分,用户基于实时社区验证做出自信决策。</p>
+                        </div>
+                        <div class="project-section">
+                            <h2>研究过程</h2>
+                            <p>使用亲和图法,将80+个访谈数据点综合为8个主题簇,揭示:</p>
+                            <p><strong>信任断层：</strong>用户不信任官方数据,养成低效的多应用比对习惯</p>
+                            <p><strong>寻路焦虑：</strong>新生难以将文字描述与实际地理位置对应</p>
+                            <p><strong>社区意愿：</strong>当交互足够简单(单次点击)时,用户乐意贡献实时数据</p>
+                            <img class="project-img" src="https://i.postimg.cc/g2Cbc1qP/Trust-Track.png" alt="">
+                        </div>
+                        <div class="project-section">
+                            <h2>关键设计迭代</h2>
+                            <p>使用"绿野仙踪法"的可用性测试发现三个优先修复点:</p>
+                            <p><strong>1. 地图逻辑修正：</strong>调整视觉标记以符合文本输入和心智模型(蓝点=当前位置)</p>
+                            <p><strong>2. 时间规划功能：</strong>增加"出发时间/到达时间"选择器,恢复用户对课表规划的控制权</p>
+                            <p><strong>3. 通知优化：</strong>将强制弹窗改为自动消失的轻提示,降低认知负荷</p>
+                        </div>
+                        <div class="project-section">
+                            <h2>核心洞察</h2>
+                            <p>即使最创新的功能(信任评分),如果基础可用性(地图交互)存在问题也会失败。基于ROI优先处理低投入、高影响的改进至关重要。</p>
+                            <p><strong>角色：</strong>用户体验研究员、交互设计师</p>
+                            <p><strong>工具：</strong>Figma, Miro, Google Sheets</p>
+                            <p><strong>方法：</strong>启发式评估、绿野仙踪测试、亲和图分析</p>
+                        </div>
+                        <div class="project-footer">
+                            <a href="https://www.figma.com/proto/nKfXmg3Buq8MapKh0RN8pX/Group-4-Assignment---Poster?node-id=266-2490&p=f&t=SFZT54Tq1EuRODjI-1&scaling=scale-down-width&content-scaling=fixed&page-id=247%3A3136" target="_blank" class="btn-figma">在 FIGMA 中查看 →</a>
+                            <a href="https://www.figma.com/proto/nKfXmg3Buq8MapKh0RN8pX/Group-4-Assignment---Poster?node-id=104-27726&t=GG8ZfReLUzLP6gfq-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=104%3A27726&show-proto-sidebar=1" target="_blank" class="btn-prototype">试玩原型 →</a>
+                        </div>
+                    ` 
+                } 
+            }
+        };
+
+        // 绘制像素小人
+        function drawPixelAvatar() {
+            const canvas = document.getElementById('avatar-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = false;
+            ctx.fillStyle = '#e8e8e8';
+            ctx.fillRect(0, 0, 64, 64);
+            const p = 2;
+            ctx.fillStyle = '#4a3728';
+            for (let x = 22; x <= 42; x += p) ctx.fillRect(x, 8, p, p);
+            for (let x = 20; x <= 44; x += p) ctx.fillRect(x, 10, p, p);
+            for (let x = 18; x <= 46; x += p) for (let y = 12; y <= 18; y += p) ctx.fillRect(x, y, p, p);
+            ctx.fillRect(18, 20, p, p * 4); ctx.fillRect(46, 20, p, p * 4);
+            ctx.fillStyle = '#f5d0b8';
+            for (let x = 20; x <= 44; x += p) for (let y = 20; y <= 36; y += p) ctx.fillRect(x, y, p, p);
+            ctx.fillStyle = '#353535'; ctx.fillRect(26, 26, p, p * 2); ctx.fillRect(38, 26, p, p * 2);
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(26, 26, p, p); ctx.fillRect(38, 26, p, p);
+            ctx.fillStyle = '#4a3728'; ctx.fillRect(24, 22, p * 3, p); ctx.fillRect(36, 22, p * 3, p);
+            ctx.fillStyle = '#c89080'; ctx.fillRect(30, 34, p * 2, p);
+            ctx.fillStyle = '#f5d0b8'; ctx.fillRect(28, 38, p * 4, p * 2);
+            ctx.fillStyle = '#a594c0';
+            for (let x = 20; x <= 44; x += p) for (let y = 40; y <= 56; y += p) ctx.fillRect(x, y, p, p);
+            ctx.fillRect(16, 42, p * 2, p * 6); ctx.fillRect(46, 42, p * 2, p * 6);
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(28, 40, p * 4, p); ctx.fillRect(30, 42, p * 2, p * 2);
+        }
+
+        function updateLanguageTexts() {
+            const texts = aboutTexts[currentLang];
+            $('#about-greeting').text(texts.greeting);
+            $('#about-p1').text(texts.p1);
+            $('#about-p2').text(texts.p2);
+            $('[data-en][data-zh]').each(function() { $(this).text($(this).attr('data-' + currentLang)); });
+            $('body').toggleClass('lang-zh', currentLang === 'zh');
+            $('.lang-btn').removeClass('active');
+            $('#lang-' + currentLang).addClass('active');
+        }
+
+        // 像素背景系统
+        const canvas = document.getElementById('pixel-background');
+        const ctx = canvas.getContext('2d');
+        const P = 6;
+        let animationElements = [];
+        let animationStartTime = 0;
+
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        function rgb(arr) { return `rgb(${arr[0]}, ${arr[1]}, ${arr[2]})`; }
+
+        function createAnimationElements() {
+            animationElements = [];
+            const cols = Math.ceil(canvas.width / P), rows = Math.ceil(canvas.height / P);
+            const winW = 50, winH = 35, winX = Math.floor(cols / 2) - Math.floor(winW / 2), winY = Math.floor(rows / 2) - Math.floor(winH / 2);
+            addPanel(5, 5, 25, 18, 0); addPanel(cols - 30, 5, 25, 18, 100); addPanel(5, rows - 23, 25, 18, 200); addPanel(cols - 30, rows - 23, 25, 18, 300);
+            addMainWindow(winX, winY, winW, winH, 400);
+            addToolbar(2, Math.floor(rows / 2) - 15, 8, 30, 150, 'left'); addToolbar(cols - 10, Math.floor(rows / 2) - 15, 8, 30, 250, 'right');
+            addScatteredDots(500); addBorderLines(600);
+        }
+
+        function addPanel(x, y, w, h, baseDelay) {
+            for (let i = 0; i < w; i++) { animationElements.push({ x: x + i, y: y, delay: baseDelay + i * 5, type: 'dark', fromDir: 'top' }); animationElements.push({ x: x + i, y: y + h - 1, delay: baseDelay + i * 5 + 50, type: 'dark', fromDir: 'bottom' }); }
+            for (let j = 1; j < h - 1; j++) { animationElements.push({ x: x, y: y + j, delay: baseDelay + j * 5, type: 'dark', fromDir: 'left' }); animationElements.push({ x: x + w - 1, y: y + j, delay: baseDelay + j * 5 + 30, type: 'dark', fromDir: 'right' }); }
+        }
+
+        function addMainWindow(x, y, w, h, baseDelay) {
+            for (let i = 0; i < w; i++) { animationElements.push({ x: x + i, y: y, delay: baseDelay + Math.abs(i - w/2) * 3, type: 'dark', fromDir: 'top' }); animationElements.push({ x: x + i, y: y + h - 1, delay: baseDelay + Math.abs(i - w/2) * 3 + 100, type: 'dark', fromDir: 'bottom' }); }
+            for (let j = 1; j < h - 1; j++) { animationElements.push({ x: x, y: y + j, delay: baseDelay + j * 4, type: 'dark', fromDir: 'left' }); animationElements.push({ x: x + w - 1, y: y + j, delay: baseDelay + j * 4, type: 'dark', fromDir: 'right' }); }
+        }
+
+        function addToolbar(x, y, w, h, baseDelay, side) {
+            for (let i = 0; i < w; i++) { animationElements.push({ x: x + i, y: y, delay: baseDelay + i * 10, type: 'dark', fromDir: side }); }
+            for (let j = 0; j < h; j++) { animationElements.push({ x: x, y: y + j, delay: baseDelay + j * 5, type: 'dark', fromDir: side }); }
+        }
+
+        function addScatteredDots(baseDelay) {
+            const cols = Math.ceil(canvas.width / P), rows = Math.ceil(canvas.height / P);
+            for (let i = 0; i < 60; i++) { animationElements.push({ x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows), delay: baseDelay + i * 10, type: 'dark', fromDir: 'center' }); }
+        }
+
+        function addBorderLines(baseDelay) {
+            const cols = Math.ceil(canvas.width / P), rows = Math.ceil(canvas.height / P);
+            for (let y = 20; y < rows - 20; y += 4) { animationElements.push({ x: 0, y: y, delay: baseDelay + y * 3, type: 'dark', fromDir: 'left' }); animationElements.push({ x: cols - 1, y: y, delay: baseDelay + y * 3, type: 'dark', fromDir: 'right' }); }
+        }
+
+        function drawAnimationFrame(timestamp) {
+            if (!animationStartTime) animationStartTime = timestamp;
+            const elapsed = timestamp - animationStartTime;
+            ctx.fillStyle = rgb(currentTheme.light); ctx.fillRect(0, 0, canvas.width, canvas.height);
+            animationElements.forEach(el => {
+                const progress = Math.min(1, Math.max(0, (elapsed - el.delay) / 150));
+                if (progress <= 0) return;
+                let offsetX = 0, offsetY = 0; const slideDistance = Math.floor((1 - progress) * 3);
+                if (el.fromDir === 'left') offsetX = -slideDistance; else if (el.fromDir === 'right') offsetX = slideDistance; else if (el.fromDir === 'top') offsetY = -slideDistance; else if (el.fromDir === 'bottom') offsetY = slideDistance;
+                ctx.fillStyle = `rgba(${currentTheme.dark[0]}, ${currentTheme.dark[1]}, ${currentTheme.dark[2]}, ${Math.floor(progress * 4) / 4})`;
+                ctx.fillRect((el.x + offsetX) * P, (el.y + offsetY) * P, P, P);
+            });
+            if (elapsed < Math.max(...animationElements.map(el => el.delay)) + 200) requestAnimationFrame(drawAnimationFrame); else drawStaticCanvas();
+        }
+
+        function drawStaticCanvas() {
+            ctx.fillStyle = rgb(currentTheme.light); ctx.fillRect(0, 0, canvas.width, canvas.height);
+            animationElements.forEach(el => { ctx.fillStyle = rgb(currentTheme.dark); ctx.fillRect(el.x * P, el.y * P, P, P); });
+        }
+
+        function startBackgroundAnimation() { createAnimationElements(); animationStartTime = 0; requestAnimationFrame(drawAnimationFrame); }
+
+        function positionProjectWindows() {
+            const wins = $('.project-tab-window'), positions = [], sidebarRight = 230, headerHeight = 150, footerHeight = 100;
+            wins.each(function(i) {
+                const $w = $(this), wW = $w.outerWidth(), wH = $w.outerHeight();
+                let placed = false, attempts = 0;
+                while (!placed && attempts < 100) {
+                    const x = sidebarRight + Math.random() * ($(window).width() - sidebarRight - wW - 40);
+                    const y = headerHeight + Math.random() * ($(window).height() - headerHeight - footerHeight - wH);
+                    if (!positions.some(p => x < p.x + p.w + 15 && x + wW + 15 > p.x && y < p.y + p.h + 15 && y + wH + 15 > p.y)) { $w.css({ left: x, top: y, display: 'block' }); positions.push({ x, y, w: wW, h: wH }); placed = true; }
+                    attempts++;
+                }
+                if (!placed) $w.css({ left: sidebarRight + (i % 3) * 260, top: headerHeight + Math.floor(i / 3) * 340, display: 'block' });
+            });
+        }
+
+        function playEntranceAnimation() {
+            startBackgroundAnimation();
+            setTimeout(() => $('#pixel-background').addClass('visible'), 100);
+            setTimeout(() => $('#sidebar').addClass('visible'), 300);
+            setTimeout(() => { $('#header-text').addClass('visible'); $('#language-switcher').addClass('visible'); }, 400);
+            setTimeout(() => $('#footer-text').addClass('visible'), 500);
+            $('.project-tab-window').each(function(index) { setTimeout(() => $(this).addClass('visible'), 600 + index * 100); });
+        }
+
+        function loadProjectContent(id) {
+            const p = projectData[id]; if (!p) return;
+            const c = p[currentLang] || p.en;
+            $('#project-detail-window .window-title').text(c.title);
+            $('#project-content').html(c.content);
+        }
+
+        function switchTab(i) { $('#about-me-window .tab-btn').removeClass('active').eq(i).addClass('active'); $('#about-me-window .tab-content').removeClass('active').eq(i).addClass('active'); }
+        function showAbout(tabIndex) { switchTab(tabIndex); if (!$('#about-me-window').is(':visible')) { $('#modal-overlay').addClass('active'); $('#about-me-window').show(); } }
+        function hideModals() { $('#modal-overlay').removeClass('active'); $('.modal-window').hide(); $('.sidebar-item').removeClass('active'); }
+
+        // 事件绑定
+        $('#lang-en').on('click', () => { currentLang = 'en'; updateLanguageTexts(); });
+        $('#lang-zh').on('click', () => { currentLang = 'zh'; updateLanguageTexts(); });
+        $('#about-me-window .tab-btn').on('click', function() { switchTab($(this).data('tab')); });
+        $('.btn-close-win, .btn-minimize, .btn-close-modal').on('click', hideModals);
+        $('#modal-overlay').on('click', hideModals);
+        
+        $('#nav-about').on('click', function() { $('.sidebar-item').removeClass('active'); $(this).addClass('active'); showAbout(0); });
+        $('#nav-portfolio').on('click', function() { $('.sidebar-item').removeClass('active'); $(this).addClass('active'); showAbout(1); });
+        $('#nav-contact').on('click', function() { $('.sidebar-item').removeClass('active'); $(this).addClass('active'); showAbout(2); });
+        $('#nav-resume').on('click', function() { $('.sidebar-item').removeClass('active'); $(this).addClass('active'); showAbout(3); });
+        
+        $('.project-tab-window .window-body, .portfolio-item').on('click', function() {
+            const id = $(this).closest('[data-project]').data('project') || $(this).data('project');
+            loadProjectContent(id);
+            $('#modal-overlay').addClass('active');
+            $('#project-detail-window').show();
+        });
+        
+        $('#download-portfolio').on('click', () => window.open('./portfolio/Portfolio_XuJiahao.pdf', '_blank'));
+        $('#resume-en .btn-download').on('click', (e) => { e.stopPropagation(); window.open('./assets/resumes/Resume_XuJiahao.pdf', '_blank'); });
+        $('#resume-zh .btn-download').on('click', (e) => { e.stopPropagation(); window.open('./assets/resumes/简历_徐嘉豪.pdf', '_blank'); });
+        
+        $('.project-tab-window').draggable({ handle: '.window-header', containment: '#desktop', scroll: false, start: function() { $(this).css('z-index', 100); } });
+        $('#about-me-window, #project-detail-window').draggable({ handle: '.window-header', containment: 'window', scroll: false });
+        
+        $(window).on('resize', () => { resizeCanvas(); createAnimationElements(); drawStaticCanvas(); });
+        $(document).on('keydown', (e) => { if (e.key === 'Escape') hideModals(); });
+
+        // 初始化
+        resizeCanvas();
+        drawPixelAvatar();
+        updateLanguageTexts();
+        positionProjectWindows();
+        playEntranceAnimation();
+        
+        console.log('Portfolio initialized - Theme:', currentTheme.name);
+    });
+    </script>
+</body>
+</html>
